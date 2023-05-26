@@ -100,4 +100,4 @@ remote_ikernel==0.4.6 # Running IPython kernels through batch queues
 jupyter_contrib_nbextensions==0.5.1 # A collection of Jupyter nbextensions.
 jupyter_nbextensions_configurator==0.4.1 # jupyter serverextension providing configuration interfaces for nbextensions.
 # TODO: jupyter-tensorboard version has a bug and hence does not support tensorboard 2.3 - 2.4 currently -> installed later
-nbdime==3.1.0 # Diff and merge of Jupyter Notebooks
+nbdime==3.1.1 # Diff and merge of Jupyter Notebooks
