@@ -88,7 +88,7 @@ ipyparallel==6.3.0
 jax==0.2.13
 jaxlib==0.1.65
 jellyfish==0.8.2
-joblib==1.0.1
+joblib==1.1.1
 jsonpickle==1.5.2
 jupyter-packaging==0.10.2
 jupyterlab-widgets==1.0.0
