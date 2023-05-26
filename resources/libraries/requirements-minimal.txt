@@ -83,7 +83,7 @@ tensorboard==2.5.0 # TensorBoard lets you watch Tensors Flow
 
 ## Glances
 psutil==5.8.0 # Cross-platform lib for process and system monitoring in Python.
-bottle==0.12.19 # Fast and simple WSGI-framework for small web-applications.
+bottle==0.12.20 # Fast and simple WSGI-framework for small web-applications.
 netifaces==0.11.0 # Portable network interface information.
 py-cpuinfo==8.0.0 # Get CPU info with pure Python 2 & 3
 glances==3.1.7 # A cross-platform curses-based monitoring tool
