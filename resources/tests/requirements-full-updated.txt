@@ -24,7 +24,7 @@ boltons==20.2.1
 bqplot==0.12.26
 cassandra-driver==3.25.0
 category_encoders==2.2.2
-celery==5.0.5
+celery==5.2.2
 chainer==7.7.0
 chardet==4.0.0
 cloudant==2.14.0
