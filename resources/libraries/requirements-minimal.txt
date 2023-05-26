@@ -86,7 +86,7 @@ psutil==5.8.0 # Cross-platform lib for process and system monitoring in Python.
 bottle==0.12.20 # Fast and simple WSGI-framework for small web-applications.
 netifaces==0.11.0 # Portable network interface information.
 py-cpuinfo==8.0.0 # Get CPU info with pure Python 2 & 3
-glances==3.1.7 # A cross-platform curses-based monitoring tool
+glances==3.2.1 # A cross-platform curses-based monitoring tool
 pymdstat==0.4.2 # Python library to parse Linux /proc/mdstat
 
 ## Jupyter
