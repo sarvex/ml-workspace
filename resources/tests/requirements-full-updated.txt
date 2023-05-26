@@ -219,7 +219,7 @@ theano==1.0.5
 thinc==8.0.3
 tinydb==4.4.0
 tokenizers==0.10.2
-torch==1.8.1
+torch==1.13.1
 torch-geometric==1.7.0
 torchsummary==1.5.1
 torchvision==0.9.1
