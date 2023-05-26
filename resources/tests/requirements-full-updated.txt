@@ -257,7 +257,7 @@ facets-overview==1.0.0
 ipython-sql==0.4.0
 jupyter-client==6.1.12
 jupyter-console==6.4.0
-jupyter-core==4.7.1
+jupyter-core==4.11.2
 jupyter-kernel-gateway==2.5.0
 jupyter-server==1.8.0
 jupyter-server-proxy==3.0.2
