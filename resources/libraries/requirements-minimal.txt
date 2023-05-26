@@ -20,7 +20,7 @@ Pillow==8.2.0 # Python Imaging Library (Fork)
 pyzmq==22.1.0 # Python bindings for 0MQ
 python-crontab==2.5.1 # Python Crontab API
 cmake==3.20.4 # CMake is an open-source, cross-platform family of tools designed to build, test and package software
-protobuf==3.17.3 # Protocol Buffers
+protobuf==3.18.3 # Protocol Buffers
 
 ## Utilities
 httpie==2.4.0 # HTTPie - a CLI, cURL-like tool for humans.
