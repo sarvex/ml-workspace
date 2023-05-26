@@ -170,7 +170,7 @@ pytorch-ignite==0.4.5
 pytorch-nlp==0.5.0
 PyYAML==5.4.1
 pyzmq==22.1.0
-redis==3.5.3
+redis==4.4.4
 requests-html==0.10.0
 rich==10.4.0
 rope==0.19.0
