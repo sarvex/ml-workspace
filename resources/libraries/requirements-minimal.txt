@@ -52,7 +52,7 @@ cffi==1.14.5 # Foreign Function Interface for Python calling C code.
 # Development Helper
 twine==3.4.1 # Collection of utilities for publishing packages on PyPI
 tox==3.23.1 # tox is a generic virtualenv management and test command line tool
-pipenv==2021.5.29 # Python Development Workflow for Humans.
+pipenv==2022.1.8 # Python Development Workflow for Humans.
 poetry==1.1.9 # Python dependency management and packaging made easy
 virtualenv==20.4.7 # Virtual Python Environment builder
 pytest==6.2.4 # pytest: simple powerful testing with Python
