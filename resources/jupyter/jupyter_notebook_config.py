@@ -7,10 +7,6 @@ import psutil
 from jupyter_core.paths import jupyter_data_dir
 
 c = get_config()
-# https://jupyter-notebook.readthedocs.io/en/stable/config.html
-# TODO: not needed to open this port?
-# c.NotebookApp.ip = "*"
-c.NotebookApp.port = 8090
 c.NotebookApp.notebook_dir = "./"
 c.NotebookApp.open_browser = False
 c.NotebookApp.allow_root = True
@@ -29,6 +25,7 @@ c.NotebookApp.log_level = "WARN"
 
 c.JupyterApp.answer_yes = True
 
+c.NotebookApp.port = 8090
 # set base url if available
 base_url = os.getenv("WORKSPACE_BASE_URL", "/")
 if base_url is not None and base_url != "/":
@@ -51,9 +48,7 @@ if shutdown_inactive_kernels and shutdown_inactive_kernels.lower().strip() != "f
 
     if cull_timeout > 0:
         print(
-            "Activating automatic kernel shutdown after "
-            + str(cull_timeout)
-            + "s of inactivity."
+            f"Activating automatic kernel shutdown after {cull_timeout}s of inactivity."
         )
         # Timeout (in seconds) after which a kernel is considered idle and ready to be shutdown.
         c.MappingKernelManager.cull_idle_timeout = cull_timeout
@@ -83,14 +78,14 @@ else:
 # https://github.com/timkpaine/jupyterlab_iframe
 try:
     if not base_url.startswith("/"):
-        base_url = "/" + base_url
+        base_url = f"/{base_url}"
     # iframe plugin currently needs absolut URLS
     c.JupyterLabIFrame.iframes = [
-        base_url + "tools/ungit",
-        base_url + "tools/netdata",
-        base_url + "tools/vnc",
-        base_url + "tools/glances",
-        base_url + "tools/vscode",
+        f"{base_url}tools/ungit",
+        f"{base_url}tools/netdata",
+        f"{base_url}tools/vnc",
+        f"{base_url}tools/glances",
+        f"{base_url}tools/vscode",
     ]
 except Exception:
     pass
@@ -98,8 +93,8 @@ except Exception:
 # https://github.com/timkpaine/jupyterlab_templates
 WORKSPACE_HOME = os.getenv("WORKSPACE_HOME", "/workspace")
 try:
-    if os.path.exists(WORKSPACE_HOME + "/templates"):
-        c.JupyterLabTemplates.template_dirs = [WORKSPACE_HOME + "/templates"]
+    if os.path.exists(f"{WORKSPACE_HOME}/templates"):
+        c.JupyterLabTemplates.template_dirs = [f"{WORKSPACE_HOME}/templates"]
     c.JupyterLabTemplates.include_default = False
 except Exception:
     pass
@@ -113,12 +108,8 @@ try:
 
     total_memory = psutil.virtual_memory().total
 
-    if not mem_limit:
+    if not mem_limit or int(mem_limit) > int(total_memory):
         mem_limit = total_memory
-    elif int(mem_limit) > int(total_memory):
-        # if mem limit from cgroup bigger than total memory -> use total memory
-        mem_limit = total_memory
-
     # Workaround -> round memory limit, otherwise the number is quite long
     # TODO fix in nbresuse
     mem_limit = round(int(mem_limit) / (1024 * 1024)) * (1024 * 1024)

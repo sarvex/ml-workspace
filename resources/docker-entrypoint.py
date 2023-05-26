@@ -28,7 +28,7 @@ def set_env_variable(env_variable: str, value: str, ignore_if_set: bool = False)
         # if it is already set, do not set it to the new value
         return
     # TODO is export needed as well?
-    call("export " + env_variable + '="' + value + '"', shell=True)
+    call(f'export {env_variable}="{value}"', shell=True)
     os.environ[env_variable] = value
 
 
@@ -49,7 +49,7 @@ if ENV_JUPYTERHUB_SERVICE_PREFIX:
 
 # Add leading slash
 if not base_url.startswith("/"):
-    base_url = "/" + base_url
+    base_url = f"/{base_url}"
 
 # Remove trailing slash
 base_url = base_url.rstrip("/").strip()
@@ -58,9 +58,7 @@ base_url = quote(base_url, safe="/%")
 
 set_env_variable(ENV_NAME_WORKSPACE_BASE_URL, base_url)
 
-# Dynamically set MAX_NUM_THREADS
-ENV_MAX_NUM_THREADS = os.getenv("MAX_NUM_THREADS", None)
-if ENV_MAX_NUM_THREADS:
+if ENV_MAX_NUM_THREADS := os.getenv("MAX_NUM_THREADS", None):
     # Determine the number of availabel CPU resources, but limit to a max number
     if ENV_MAX_NUM_THREADS.lower() == "auto":
         ENV_MAX_NUM_THREADS = str(math.ceil(os.cpu_count()))
@@ -121,32 +119,24 @@ if ENV_MAX_NUM_THREADS:
         "BLIS_NUM_THREADS", ENV_MAX_NUM_THREADS, ignore_if_set=True
     )  # Blis
     set_env_variable("TBB_NUM_THREADS", ENV_MAX_NUM_THREADS, ignore_if_set=True)  # TBB
-    # GOTO_NUM_THREADS
-
 ENV_RESOURCES_PATH = os.getenv("RESOURCES_PATH", "/resources")
 ENV_WORKSPACE_HOME = os.getenv("WORKSPACE_HOME", "/workspace")
 
 # pass all script arguments to next script
 script_arguments = " " + " ".join(sys.argv[1:])
 
-EXECUTE_CODE = os.getenv("EXECUTE_CODE", None)
-if EXECUTE_CODE:
+if EXECUTE_CODE := os.getenv("EXECUTE_CODE", None):
     # use workspace as working directory
     sys.exit(
         call(
-            "cd "
-            + ENV_WORKSPACE_HOME
-            + " && python "
-            + ENV_RESOURCES_PATH
-            + "/scripts/execute_code.py"
-            + script_arguments,
+            f"cd {ENV_WORKSPACE_HOME} && python {ENV_RESOURCES_PATH}/scripts/execute_code.py{script_arguments}",
             shell=True,
         )
     )
 
 sys.exit(
     call(
-        "python " + ENV_RESOURCES_PATH + "/scripts/run_workspace.py" + script_arguments,
+        f"python {ENV_RESOURCES_PATH}/scripts/run_workspace.py{script_arguments}",
         shell=True,
     )
 )

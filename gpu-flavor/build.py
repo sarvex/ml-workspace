@@ -11,7 +11,7 @@ IMAGE_NAME = "ml-workspace"
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument(
-    "--" + FLAG_FLAVOR,
+    f"--{FLAG_FLAVOR}",
     help="Flavor (gpu) used for docker container",
     default="all",
 )
@@ -37,10 +37,10 @@ if flavor == "all":
 # unknown flavor -> try to build from subdirectory
 if flavor not in ["gpu"]:
     # assume that flavor has its own directory with build.py
-    build_utils.build(flavor + "-flavor", args)
+    build_utils.build(f"{flavor}-flavor", args)
     build_utils.exit_process(0)
 
-docker_image_name = IMAGE_NAME + "-" + flavor
+docker_image_name = f"{IMAGE_NAME}-{flavor}"
 
 # docker build
 git_rev = "unknown"
@@ -63,15 +63,15 @@ try:
 except Exception:
     pass
 
-base_image = "ml-workspace:" + VERSION
+base_image = f"ml-workspace:{VERSION}"
 if args.get(build_utils.FLAG_RELEASE):
     base_image = docker_image_prefix + base_image
 
-base_image_build_arg = " --build-arg ARG_WORKSPACE_BASE_IMAGE=" + base_image
-vcs_ref_build_arg = " --build-arg ARG_VCS_REF=" + str(git_rev)
-build_date_build_arg = " --build-arg ARG_BUILD_DATE=" + str(build_date)
-flavor_build_arg = " --build-arg ARG_WORKSPACE_FLAVOR=" + str(flavor)
-version_build_arg = " --build-arg ARG_WORKSPACE_VERSION=" + VERSION
+base_image_build_arg = f" --build-arg ARG_WORKSPACE_BASE_IMAGE={base_image}"
+vcs_ref_build_arg = f" --build-arg ARG_VCS_REF={str(git_rev)}"
+build_date_build_arg = f" --build-arg ARG_BUILD_DATE={str(build_date)}"
+flavor_build_arg = f" --build-arg ARG_WORKSPACE_FLAVOR={flavor}"
+version_build_arg = f" --build-arg ARG_WORKSPACE_VERSION={VERSION}"
 
 if args.get(build_utils.FLAG_MAKE):
     build_args = f"{base_image_build_arg} {version_build_arg} {flavor_build_arg} {vcs_ref_build_arg} {build_date_build_arg}"

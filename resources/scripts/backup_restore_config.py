@@ -25,13 +25,13 @@ parser.add_argument('mode', type=str, default="backup", help='Either backup or r
 
 args, unknown = parser.parse_known_args()
 if unknown:
-    log.info("Unknown arguments " + str(unknown))
+    log.info(f"Unknown arguments {str(unknown)}")
 
 WORKSPACE_HOME = os.getenv('WORKSPACE_HOME')
 USER_HOME = os.getenv('HOME')
 RESOURCE_FOLDER = os.getenv('RESOURCES_PATH')
 CONFIG_BACKUP_ENABLED = os.getenv('CONFIG_BACKUP_ENABLED')
-CONFIG_BACKUP_FOLDER = WORKSPACE_HOME + "/.workspace/backup/"
+CONFIG_BACKUP_FOLDER = f"{WORKSPACE_HOME}/.workspace/backup/"
 
 if args.mode == "restore":
     if CONFIG_BACKUP_ENABLED is None or CONFIG_BACKUP_ENABLED.lower() == "false" or CONFIG_BACKUP_ENABLED.lower() == "off":
@@ -43,15 +43,17 @@ if args.mode == "restore":
     if not os.path.exists(CONFIG_BACKUP_FOLDER) or len(os.listdir(CONFIG_BACKUP_FOLDER)) == 0:
         log.info("Nothing to restore. Config backup folder is empty.")
         sys.exit()
-    
+
     # set verbose? -v
-    rsync_restore =  "rsync -a -r -t -z -E -X -A " + CONFIG_BACKUP_FOLDER + " " + USER_HOME
-    log.debug("Run rsync restore: " + rsync_restore)
+    rsync_restore = (
+        f"rsync -a -r -t -z -E -X -A {CONFIG_BACKUP_FOLDER} {USER_HOME}"
+    )
+    log.debug(f"Run rsync restore: {rsync_restore}")
     subprocess.call(rsync_restore, shell=True)
 elif args.mode == "backup":
     if not os.path.exists(CONFIG_BACKUP_FOLDER):
         os.makedirs(CONFIG_BACKUP_FOLDER)
-    
+
     log.info("Starting configuration backup.")
     backup_selection = "--include='/.config' \
                         --include='/.config/xfce4/' --include='/.config/xfce4/xfconf/***' \
@@ -62,14 +64,15 @@ elif args.mode == "backup":
                         --include='/.local/' --include='/.local/share/' --include='/.local/share/jupyter/' --include='/.local/share/jupyter/kernels/***' \
                         --include='/.jupyter/***'"
     # Do not backup vscode extensions? --include='/.vscode/***' \
-    
+
     # TODO configure selection via environemnt flag? 
     # set verbose? -v
     rsync_backup =  "rsync -a -r -t -z -E -X -A --delete-excluded --max-size=100m \
                         " + backup_selection + " \
+                        " + backup_selection + " \
                         --exclude='/.ssh/environment' --include='/.ssh/***' \
                         --exclude='*' " + USER_HOME + "/ " + CONFIG_BACKUP_FOLDER
-    log.debug("Run rsync backup: " + rsync_backup)
+    log.debug(f"Run rsync backup: {rsync_backup}")
     subprocess.call(rsync_backup, shell=True)
 
 elif args.mode == "schedule":
@@ -81,25 +84,25 @@ elif args.mode == "schedule":
 
     if not os.path.exists(CONFIG_BACKUP_FOLDER):
         os.makedirs(CONFIG_BACKUP_FOLDER)
-    
+
     from crontab import CronTab, CronSlices
 
     cron_schedule = DEFAULT_CRON
     # env variable can also be a cron scheadule
     if CronSlices.is_valid(CONFIG_BACKUP_ENABLED):
         cron_schedule = CONFIG_BACKUP_ENABLED
-    
+
     # Cron does not provide enviornment variables, source them manually
     environment_file = os.path.join(RESOURCE_FOLDER, "environment.sh")
     with open(environment_file, 'w') as fp:
-        for env in os.environ:
+        for env, value in os.environ.items():
             if env != "LS_COLORS":
-                fp.write("export " + env + "=\"" + os.environ[env] + "\"\n")
+                fp.write(f"export {env}" + "=\"" + value + "\"\n")
 
     os.chmod(environment_file, 0o777)
 
     script_file_path = os.path.realpath(__file__)
-    command = ". " + environment_file + "; " + sys.executable + " '" + script_file_path + "' backup> /proc/1/fd/1 2>/proc/1/fd/2"
+    command = f". {environment_file}; {sys.executable} '{script_file_path}' backup> /proc/1/fd/1 2>/proc/1/fd/2"
     cron = CronTab(user=True)
 
     # remove all other backup tasks
@@ -107,7 +110,7 @@ elif args.mode == "schedule":
 
     job = cron.new(command=command)
     if CronSlices.is_valid(cron_schedule):
-        log.info("Scheduling cron config backup task with with cron: " + cron_schedule)
+        log.info(f"Scheduling cron config backup task with with cron: {cron_schedule}")
         job.setall(cron_schedule)
         job.enable()
         cron.write()
