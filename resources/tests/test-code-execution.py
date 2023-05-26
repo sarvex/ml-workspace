@@ -13,12 +13,14 @@ log = logging.getLogger(__name__)
 
 # Wrapper to print out command
 def call(command):
-    print("Executing: "+command)
+    print(f"Executing: {command}")
     return subprocess.call(command, shell=True)
 
 ENV_RESOURCES_PATH = os.getenv("RESOURCES_PATH", "/resources")
 
-exit_code = call(ENV_RESOURCES_PATH + "/scripts/execute_code.py " + ENV_RESOURCES_PATH + "/tests/ml-job/")
+exit_code = call(
+    f"{ENV_RESOURCES_PATH}/scripts/execute_code.py {ENV_RESOURCES_PATH}/tests/ml-job/"
+)
 
 if exit_code == 0:
     print("Code execution test successfull.")

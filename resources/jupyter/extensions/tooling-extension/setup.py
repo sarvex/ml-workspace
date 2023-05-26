@@ -19,9 +19,9 @@ EXT_DIR = os.path.join(os.path.dirname(__file__), EXTENSION_NAME)
 
 class InstallCommand(install):
     def run(self):
-        open_tools_widget_path = EXTENSION_NAME + "/" + OPEN_TOOLS_WIDGET
-        git_tree_widget_path = EXTENSION_NAME + "/" + GIT_TREE_WIDGET
-        git_notebook_widget_path = EXTENSION_NAME + "/" + GIT_NOTEBOOK_WIDGET
+        open_tools_widget_path = f"{EXTENSION_NAME}/{OPEN_TOOLS_WIDGET}"
+        git_tree_widget_path = f"{EXTENSION_NAME}/{GIT_TREE_WIDGET}"
+        git_notebook_widget_path = f"{EXTENSION_NAME}/{GIT_NOTEBOOK_WIDGET}"
 
         # Install Python package
         install.run(self)
@@ -41,7 +41,7 @@ class InstallCommand(install):
         # js_cm.update("tree", {"load_extensions": {git_tree_widget_path: True}})
 
         # Activate the Python server extension
-        server_extension_name = EXTENSION_NAME + "." + HANDLER_NAME
+        server_extension_name = f"{EXTENSION_NAME}.{HANDLER_NAME}"
 
         jupyter_config_file = os.path.join(
             jupyter_config_dir(), "jupyter_notebook_config.json"

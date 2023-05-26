@@ -6,13 +6,12 @@ import docker
 from universal_build import build_utils
 from universal_build.helpers import build_docker
 
-REMOTE_IMAGE_PREFIX = "mltooling/"
 COMPONENT_NAME = "ml-workspace"
 FLAG_FLAVOR = "flavor"
 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument(
-    "--" + FLAG_FLAVOR,
+    f"--{FLAG_FLAVOR}",
     help="Flavor (full, light, minimal, gpu) used for docker container",
     default="all",
 )
@@ -22,6 +21,7 @@ args = build_utils.parse_arguments(argument_parser=parser)
 VERSION = str(args.get(build_utils.FLAG_VERSION))
 docker_image_prefix = args.get(build_docker.FLAG_DOCKER_IMAGE_PREFIX)
 
+REMOTE_IMAGE_PREFIX = "mltooling/"
 if not docker_image_prefix:
     docker_image_prefix = REMOTE_IMAGE_PREFIX
 
@@ -48,13 +48,13 @@ if flavor == "all":
 # unknown flavor -> try to build from subdirectory
 if flavor not in ["full", "minimal", "light"]:
     # assume that flavor has its own directory with build.py
-    build_utils.build(flavor + "-flavor", args)
+    build_utils.build(f"{flavor}-flavor", args)
     build_utils.exit_process(0)
 
 docker_image_name = COMPONENT_NAME
 # Build full image without suffix if the flavor is not minimal or light
-if flavor in ["minimal", "light"]:
-    docker_image_name += "-" + flavor
+if flavor in {"minimal", "light"}:
+    docker_image_name += f"-{flavor}"
 
 # docker build
 git_rev = "unknown"
@@ -77,21 +77,13 @@ try:
 except Exception:
     pass
 
-vcs_ref_build_arg = " --build-arg ARG_VCS_REF=" + str(git_rev)
-build_date_build_arg = " --build-arg ARG_BUILD_DATE=" + str(build_date)
-flavor_build_arg = " --build-arg ARG_WORKSPACE_FLAVOR=" + str(flavor)
-version_build_arg = " --build-arg ARG_WORKSPACE_VERSION=" + VERSION
+vcs_ref_build_arg = f" --build-arg ARG_VCS_REF={str(git_rev)}"
+build_date_build_arg = f" --build-arg ARG_BUILD_DATE={str(build_date)}"
+flavor_build_arg = f" --build-arg ARG_WORKSPACE_FLAVOR={flavor}"
+version_build_arg = f" --build-arg ARG_WORKSPACE_VERSION={VERSION}"
 
 if args[build_utils.FLAG_MAKE]:
-    build_args = (
-        version_build_arg
-        + " "
-        + flavor_build_arg
-        + " "
-        + vcs_ref_build_arg
-        + " "
-        + build_date_build_arg
-    )
+    build_args = f"{version_build_arg} {flavor_build_arg} {vcs_ref_build_arg} {build_date_build_arg}"
 
     completed_process = build_docker.build_docker_image(
         docker_image_name, version=VERSION, build_args=build_args
@@ -127,9 +119,7 @@ if args[build_utils.FLAG_TEST]:
 
 
 if args[build_utils.FLAG_RELEASE]:
-    # Bump all versions in some filess
-    previous_version = build_utils.get_latest_version()
-    if previous_version:
+    if previous_version := build_utils.get_latest_version():
         build_utils.replace_in_files(
             previous_version,
             VERSION,

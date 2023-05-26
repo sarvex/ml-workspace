@@ -47,9 +47,9 @@ class HelloWorldHandler(IPythonHandler):
         pass
 
     def get(self):
-        result = self.request.protocol + "://" + self.request.host
+        result = f"{self.request.protocol}://{self.request.host}"
         if "base_url" in self.application.settings:
-            result = result + "   " + self.application.settings["base_url"]
+            result = f"{result}   " + self.application.settings["base_url"]
         self.finish(result)
 
 
@@ -68,7 +68,7 @@ def handle_error(handler, status_code: int, error_msg: str = None, exception=Non
     error = {"error": error_msg}
     handler.finish(json.dumps(error))
 
-    log.info("An error occurred (" + str(status_code) + "): " + error_msg)
+    log.info(f"An error occurred ({status_code}): {error_msg}")
 
 
 def send_data(handler, data):
@@ -86,29 +86,27 @@ class InstallToolHandler(IPythonHandler):
     @web.authenticated
     def get(self):
         try:
-            workspace_installer_folder = RESOURCES_PATH + "/tools/"
             workspace_tool_installers = []
 
+            workspace_installer_folder = f"{RESOURCES_PATH}/tools/"
             # sort entries by name
             for f in sorted(
                 glob.glob(os.path.join(workspace_installer_folder, "*.sh"))
             ):
                 tool_name = os.path.splitext(os.path.basename(f))[0].strip()
                 workspace_tool_installers.append(
-                    {"name": tool_name, "command": "/bin/bash " + f}
+                    {"name": tool_name, "command": f"/bin/bash {f}"}
                 )
 
             if not workspace_tool_installers:
                 log.warn(
-                    "No workspace tool installers found at path: "
-                    + workspace_installer_folder
+                    f"No workspace tool installers found at path: {workspace_installer_folder}"
                 )
                 # Backup if file does not exist
                 workspace_tool_installers.append(
                     {
                         "name": "none",
-                        "command": "No workspace tool installers found at path: "
-                        + workspace_installer_folder,
+                        "command": f"No workspace tool installers found at path: {workspace_installer_folder}",
                     }
                 )
             self.finish(json.dumps(workspace_tool_installers))
@@ -121,7 +119,7 @@ class ToolingHandler(IPythonHandler):
     @web.authenticated
     def get(self):
         try:
-            workspace_tooling_folder = HOME + "/.workspace/tools/"
+            workspace_tooling_folder = f"{HOME}/.workspace/tools/"
             workspace_tools = []
 
             def tool_is_duplicated(tool_array, tool):
@@ -149,13 +147,11 @@ class ToolingHandler(IPythonHandler):
                                 if not tool_is_duplicated(workspace_tools, tool):
                                     workspace_tools.append(tool)
                 except Exception:
-                    log.warn("Failed to load tools file: " + f.name)
+                    log.warn(f"Failed to load tools file: {f.name}")
                     continue
 
             if not workspace_tools:
-                log.warn(
-                    "No workspace tools found at path: " + workspace_tooling_folder
-                )
+                log.warn(f"No workspace tools found at path: {workspace_tooling_folder}")
                 # Backup if file does not exist
                 workspace_tools.append(
                     {
@@ -188,10 +184,7 @@ class GitCommitHandler(IPythonHandler):
 
         file_path = _resolve_path(unquote(data["filePath"]))
 
-        commit_msg = None
-        if "commitMsg" in data:
-            commit_msg = unquote(data["commitMsg"])
-
+        commit_msg = unquote(data["commitMsg"]) if "commitMsg" in data else None
         try:
             commit_file(file_path, commit_msg)
         except Exception as ex:
@@ -363,9 +356,7 @@ class SharedFilesHandler(IPythonHandler):
                 return
 
             if not os.path.exists(path):
-                handle_error(
-                    self, 400, "The selected file or folder does not exist: " + path
-                )
+                handle_error(self, 400, f"The selected file or folder does not exist: {path}")
                 return
 
             # schema + host + port
@@ -497,7 +488,7 @@ def get_last_usage_date(path):
     date = None
 
     if not os.path.exists(path):
-        log.info("Path does not exist: " + path)
+        log.info(f"Path does not exist: {path}")
         return date
 
     try:
@@ -618,8 +609,7 @@ def get_inactive_days():
                 updated_date = datetime.strptime(
                     update_timestamp_str, "%Y-%m-%d %H:%M:%S.%f"
                 )
-                inactive_days = (datetime.now() - updated_date).days
-                return inactive_days
+                return (datetime.now() - updated_date).days
         except Exception:
             return 0
     # return 0 as fallback
@@ -642,14 +632,14 @@ def cleanup_folder(
         last_file_usage (int): Number of days a file wasn't used to allow the file to be removed. Default: 3.
         excluded_folders (list[str]): List of folders to exclude from removal (optional)
     """
-    total_cleaned_up_mb = 0
     removed_files = 0
 
+    total_cleaned_up_mb = 0
     for dirname, subdirs, files in os.walk(folder_path):
         if excluded_folders:
             for excluded_folder in excluded_folders:
                 if excluded_folder in subdirs:
-                    log.debug("Ignoring folder because of name: " + excluded_folder)
+                    log.debug(f"Ignoring folder because of name: {excluded_folder}")
                     subdirs.remove(excluded_folder)
         for filename in files:
             file_path = os.path.join(dirname, filename)
@@ -669,39 +659,21 @@ def cleanup_folder(
                 continue
 
             current_date_str = datetime.now().strftime("%B %d, %Y")
-            removal_reason = (
-                "File has been removed during folder cleaning ("
-                + folder_path
-                + ") on "
-                + current_date_str
-                + ". "
-            )
+            removal_reason = f"File has been removed during folder cleaning ({folder_path}) on {current_date_str}. "
             if file_size_mb and max_file_size_mb:
-                removal_reason += (
-                    "The file size was "
-                    + str(file_size_mb)
-                    + " MB (max "
-                    + str(max_file_size_mb)
-                    + "). "
-                )
+                removal_reason += f"The file size was {file_size_mb} MB (max {max_file_size_mb}). "
 
             if last_file_usage_days and last_file_usage:
-                removal_reason += (
-                    "The last usage was "
-                    + str(last_file_usage_days)
-                    + " days ago (max "
-                    + str(last_file_usage)
-                    + "). "
-                )
+                removal_reason += f"The last usage was {str(last_file_usage_days)} days ago (max {last_file_usage}). "
 
-            log.info(filename + ": " + removal_reason)
+            log.info(f"{filename}: {removal_reason}")
 
             # Remove file
             try:
                 os.remove(file_path)
 
                 if replace_with_info:
-                    with open(file_path + ".removed.txt", "w") as file:
+                    with open(f"{file_path}.removed.txt", "w") as file:
                         file.write(removal_reason)
 
                 if file_size_mb:
@@ -710,16 +682,12 @@ def cleanup_folder(
                 removed_files += 1
 
             except Exception as e:
-                log.info("Failed to remove file: " + file_path, e)
+                log.info(f"Failed to remove file: {file_path}", e)
 
     # check diskspace and update workspace metadata
     update_workspace_metadata()
     log.info(
-        "Finished cleaning. Removed "
-        + str(removed_files)
-        + " files with a total disk space of "
-        + str(total_cleaned_up_mb)
-        + " MB."
+        f"Finished cleaning. Removed {str(removed_files)} files with a total disk space of {str(total_cleaned_up_mb)} MB."
     )
 
 # ------------- GIT FUNCTIONS ------------------------
@@ -744,7 +712,7 @@ def set_user_email(email: str, repo=None):
         repo.config_writer().set_value("user", "email", email).release()
     else:
         exit_code = subprocess.call(
-            'git config --global user.email "' + email + '"', shell=True
+            f'git config --global user.email "{email}"', shell=True
         )
         if exit_code > 0:
             warnings.warn("Global email configuration failed.")
@@ -755,7 +723,7 @@ def set_user_name(name: str, repo=None):
         repo.config_writer().set_value("user", "name", name).release()
     else:
         exit_code = subprocess.call(
-            'git config --global user.name "' + name + '"', shell=True
+            f'git config --global user.name "{name}"', shell=True
         )
         if exit_code > 0:
             warnings.warn("Global name configuration failed.")
@@ -763,11 +731,11 @@ def set_user_name(name: str, repo=None):
 
 def commit_file(file_path: str, commit_msg: str = None, push: bool = True):
     if not os.path.isfile(file_path):
-        raise Exception("File does not exist: " + file_path)
+        raise Exception(f"File does not exist: {file_path}")
 
     repo = get_repo(os.path.dirname(file_path))
     if not repo:
-        raise Exception("No git repo was found for file: " + file_path)
+        raise Exception(f"No git repo was found for file: {file_path}")
 
     # Always add file
     repo.index.add([file_path])
@@ -783,7 +751,7 @@ def commit_file(file_path: str, commit_msg: str = None, push: bool = True):
         )
 
     if not commit_msg:
-        commit_msg = "Updated " + os.path.relpath(file_path, repo.working_dir)
+        commit_msg = f"Updated {os.path.relpath(file_path, repo.working_dir)}"
 
     try:
         # fetch and merge newest state - fast-forward-only
@@ -800,7 +768,7 @@ def commit_file(file_path: str, commit_msg: str = None, push: bool = True):
             or "branch is up to date with" in error.stdout
         ):
             # TODO better way to check if file has changed, e.g. has_file_changed
-            raise Exception("File has not been changed: " + file_path)
+            raise Exception(f"File has not been changed: {file_path}")
         else:
             raise error
 
@@ -822,10 +790,7 @@ def commit_file(file_path: str, commit_msg: str = None, push: bool = True):
 
 def get_config_value(key: str, repo=None):
     try:
-        if repo:
-            return repo.git.config(key)
-        # no repo, look up global config
-        return execute_command("git config " + key)
+        return repo.git.config(key) if repo else execute_command(f"git config {key}")
     except Exception:
         return None
 
@@ -857,14 +822,14 @@ def get_last_commit(repo) -> str or None:
 def has_file_changed(repo, file_path: str):
     # not working in all situations
     changed_files = [item.a_path for item in repo.index.diff(None)]
-    return os.path.relpath(os.path.realpath(file_path), repo.working_dir) in (
-        path for path in changed_files
-    )
+    return os.path.relpath(
+        os.path.realpath(file_path), repo.working_dir
+    ) in iter(changed_files)
 
 
 def get_git_info(directory: str):
     repo = get_repo(directory)
-    git_info = {
+    return {
         "userName": get_user_name(repo),
         "userEmail": get_user_email(repo),
         "repoRoot": repo.working_dir if repo else None,
@@ -872,7 +837,6 @@ def get_git_info(directory: str):
         "lastCommit": get_last_commit(repo) if repo else None,
         "requestPath": directory,
     }
-    return git_info
 
 
 def _get_server_root() -> str:
@@ -882,9 +846,7 @@ def _get_server_root() -> str:
 def _resolve_path(path: str) -> str or None:
     if path:
         # add jupyter server root directory
-        if path.startswith("/"):
-            path = path[1:]
-
+        path = path.removeprefix("/")
         return os.path.join(_get_server_root(), path)
     else:
         return None
@@ -924,17 +886,14 @@ def handle_ssh_script_request(handler):
     if download_script_flag and download_script_flag.lower().strip() == "true":
         # Use host, otherwise it cannot be reconstructed in tooling plugin
 
-        file_name = "setup_ssh_{}-{}".format(host.lower().replace(".", "-"), port)
-        SSH_JUMPHOST_TARGET = os.environ.get("SSH_JUMPHOST_TARGET", "")
-        if SSH_JUMPHOST_TARGET:
+        file_name = f'setup_ssh_{host.lower().replace(".", "-")}-{port}'
+        if SSH_JUMPHOST_TARGET := os.environ.get("SSH_JUMPHOST_TARGET", ""):
             # add name if variabl is set
             file_name += "-" + SSH_JUMPHOST_TARGET.lower().replace(".", "-")
         file_name += ".sh"
 
         handler.set_header("Content-Type", "application/octet-stream")
-        handler.set_header(
-            "Content-Disposition", "attachment; filename=" + file_name
-        )  # Hostname runtime
+        handler.set_header("Content-Disposition", f"attachment; filename={file_name}")
         handler.write(setup_script)
         handler.finish()
     else:
@@ -949,14 +908,12 @@ def parse_endpoint_origin(endpoint_url: str):
     hostname = endpoint_url.hostname
     port = endpoint_url.port
     if not port:
-        port = 80
-        if endpoint_url.scheme == "https":
-            port = 443
+        port = 443 if endpoint_url.scheme == "https" else 80
     return hostname, str(port)
 
 
 def generate_token(base_url: str):
-    private_ssh_key_path = HOME + "/.ssh/id_ed25519"
+    private_ssh_key_path = f"{HOME}/.ssh/id_ed25519"
     with open(private_ssh_key_path, "r") as f:
         runtime_private_key = f.read()
 
@@ -974,17 +931,19 @@ def generate_token(base_url: str):
 
 def get_setup_script(hostname: str = None, port: str = None):
 
-    private_ssh_key_path = HOME + "/.ssh/id_ed25519"
+    private_ssh_key_path = f"{HOME}/.ssh/id_ed25519"
     with open(private_ssh_key_path, "r") as f:
         runtime_private_key = f.read()
 
-    ssh_templates_path = os.path.dirname(os.path.abspath(__file__)) + "/setup_templates"
+    ssh_templates_path = (
+        f"{os.path.dirname(os.path.abspath(__file__))}/setup_templates"
+    )
 
-    with open(ssh_templates_path + "/client_command.txt", "r") as file:
+    with open(f"{ssh_templates_path}/client_command.txt", "r") as file:
         client_command = file.read()
 
     SSH_JUMPHOST_TARGET = os.environ.get("SSH_JUMPHOST_TARGET", "")
-    is_runtime_manager_existing = False if SSH_JUMPHOST_TARGET == "" else True
+    is_runtime_manager_existing = SSH_JUMPHOST_TARGET != ""
 
     RUNTIME_CONFIG_NAME = "workspace-"
     if is_runtime_manager_existing:
@@ -993,25 +952,21 @@ def get_setup_script(hostname: str = None, port: str = None):
         PORT_MANAGER = port
         PORT_RUNTIME = os.getenv("WORKSPACE_PORT", "8080")
 
-        RUNTIME_CONFIG_NAME = RUNTIME_CONFIG_NAME + "{}-{}-{}".format(
-            HOSTNAME_RUNTIME, HOSTNAME_MANAGER, PORT_MANAGER
-        )
+        RUNTIME_CONFIG_NAME += f"{HOSTNAME_RUNTIME}-{HOSTNAME_MANAGER}-{PORT_MANAGER}"
 
         client_command = (
             client_command.replace("{HOSTNAME_MANAGER}", HOSTNAME_MANAGER)
-            .replace("{PORT_MANAGER}", str(PORT_MANAGER))
+            .replace("{PORT_MANAGER}", PORT_MANAGER)
             .replace("#ProxyCommand", "ProxyCommand")
         )
 
-        local_keyscan_replacement = "{}".format(HOSTNAME_RUNTIME)
+        local_keyscan_replacement = f"{HOSTNAME_RUNTIME}"
     else:
         HOSTNAME_RUNTIME = hostname
         PORT_RUNTIME = port
-        RUNTIME_CONFIG_NAME = RUNTIME_CONFIG_NAME + "{}-{}".format(
-            HOSTNAME_RUNTIME, PORT_RUNTIME
-        )
+        RUNTIME_CONFIG_NAME += f"{HOSTNAME_RUNTIME}-{PORT_RUNTIME}"
 
-        local_keyscan_replacement = "[{}]:{}".format(HOSTNAME_RUNTIME, PORT_RUNTIME)
+        local_keyscan_replacement = f"[{HOSTNAME_RUNTIME}]:{PORT_RUNTIME}"
 
     # perform keyscan with localhost to get the runtime's keyscan result.
     # Replace then the "localhost" part in the returning string with the actual RUNTIME_HOST_NAME
@@ -1021,7 +976,7 @@ def get_setup_script(hostname: str = None, port: str = None):
             "localhost", local_keyscan_replacement
         )
 
-    output = (
+    return (
         client_command.replace("{PRIVATE_KEY_RUNTIME}", runtime_private_key)
         .replace("{HOSTNAME_RUNTIME}", HOSTNAME_RUNTIME)
         .replace("{RUNTIME_KNOWN_HOST_ENTRY}", local_keyscan_entry)
@@ -1032,8 +987,6 @@ def get_setup_script(hostname: str = None, port: str = None):
             local_keyscan_replacement.replace("[", "\[").replace("]", "\]"),
         )
     )
-
-    return output
 
 
 def get_ssh_keyscan_results(host_name, host_port=22, key_format="ecdsa"):

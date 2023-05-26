@@ -4,6 +4,7 @@
 Configure and run tools
 """
 
+
 from subprocess import call
 import os
 import sys
@@ -32,29 +33,35 @@ if INCLUDE_TUTORIALS.lower() == "true" and os.path.exists(WORKSPACE_HOME) and le
     # Copy all files within tutorials folder in resources to workspace home
     copy_tree(os.path.join(ENV_RESOURCES_PATH, "tutorials"), WORKSPACE_HOME)
 
-# restore config on startup - if CONFIG_BACKUP_ENABLED - it needs to run before other configuration 
-call("python " + ENV_RESOURCES_PATH + "/scripts/backup_restore_config.py restore", shell=True)
+# restore config on startup - if CONFIG_BACKUP_ENABLED - it needs to run before other configuration
+call(
+    f"python {ENV_RESOURCES_PATH}/scripts/backup_restore_config.py restore",
+    shell=True,
+)
 
 log.info("Configure ssh service")
-call("python " + ENV_RESOURCES_PATH + "/scripts/configure_ssh.py", shell=True)
+call(f"python {ENV_RESOURCES_PATH}/scripts/configure_ssh.py", shell=True)
 
 log.info("Configure nginx service")
-call("python " + ENV_RESOURCES_PATH + "/scripts/configure_nginx.py", shell=True)
+call(f"python {ENV_RESOURCES_PATH}/scripts/configure_nginx.py", shell=True)
 
 log.info("Configure tools")
-call("python " + ENV_RESOURCES_PATH + "/scripts/configure_tools.py", shell=True)
+call(f"python {ENV_RESOURCES_PATH}/scripts/configure_tools.py", shell=True)
 
 log.info("Configure cron scripts")
-call("python " + ENV_RESOURCES_PATH + "/scripts/configure_cron_scripts.py", shell=True)
+call(
+    f"python {ENV_RESOURCES_PATH}/scripts/configure_cron_scripts.py",
+    shell=True,
+)
 
 log.info("Configure and run custom scripts")
-call("python " + ENV_RESOURCES_PATH + "/scripts/run_custom_scripts.py", shell=True)
+call(f"python {ENV_RESOURCES_PATH}/scripts/run_custom_scripts.py", shell=True)
 
 startup_custom_script = os.path.join(WORKSPACE_HOME, "on_startup.sh")
 if os.path.exists(startup_custom_script):
     log.info("Run on_startup.sh user script from workspace folder")
     # run startup script from workspace folder - can be used to run installation routines on workspace updates
-    call("/bin/bash " + startup_custom_script, shell=True)
+    call(f"/bin/bash {startup_custom_script}", shell=True)
 
 # Run supervisor process - main container process
 call('supervisord -n -c /etc/supervisor/supervisord.conf', shell=True)

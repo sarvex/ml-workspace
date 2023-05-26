@@ -21,7 +21,7 @@ def _tensorboard_magic(line):
     parser.add_argument("--logdir", default="/workspace/")
     args = parser.parse_args(line.split())
 
-    iframe_id = "tensorboard-" + str(uuid.uuid4())
+    iframe_id = f"tensorboard-{str(uuid.uuid4())}"
 
     html = """
 <!-- JUPYTER_TENSORBOARD_TEST_MARKER -->

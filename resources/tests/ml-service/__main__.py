@@ -26,8 +26,8 @@ def patch_fastapi(app: FastAPI):
 
     async def swagger_ui_html(req: Request) -> HTMLResponse:
         swagger_ui = get_swagger_ui_html(
-            openapi_url="./"+app.openapi_url.lstrip("/"),
-            title=app.title + " - Swagger UI",
+            openapi_url="./" + app.openapi_url.lstrip("/"),
+            title=f"{app.title} - Swagger UI",
             oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         )
 
