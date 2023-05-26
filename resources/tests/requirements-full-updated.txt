@@ -139,7 +139,7 @@ neo4j-driver==4.2.1
 nevergrad==0.4.3.post3
 nose2==0.10.0
 numpy==1.19.5
-onnx==1.9.0
+onnx==1.13.0
 onnxruntime==1.5.2
 optuna==2.7.0
 pandarallel==1.5.2
