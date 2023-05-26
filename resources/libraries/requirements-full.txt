@@ -189,7 +189,7 @@ skorch==0.10.0
 smart-open==5.1.0
 spektral==1.0.6
 stop-words==2018.7.23
-streamlit==0.83.0
+streamlit==1.11.1
 streamz==0.6.2
 tables==3.6.1
 tablib==3.0.0
