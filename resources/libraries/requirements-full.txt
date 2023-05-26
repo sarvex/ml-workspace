@@ -135,7 +135,7 @@ mysqlclient==2.0.3
 neo4j-driver==4.3.1
 nevergrad==0.4.3.post4
 nose2==0.10.0
-onnx==1.9.0
+onnx==1.13.0
 onnxruntime==1.5.2
 optuna==2.8.0
 pandarallel==1.5.2
