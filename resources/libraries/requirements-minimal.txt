@@ -72,7 +72,7 @@ pipreqs==0.4.10 # Pip requirements.txt generator based on imports in project
 mypy==0.910 # Static type checker
 
 # Web Frameworks
-tornado==6.1 # Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed.
+tornado==6.3.2 # Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed.
 flask==2.2.5 # A simple framework for building complex web applications.
 gunicorn==20.1.0 # WSGI HTTP Server for UNIX
 uvicorn==0.14.0 # The lightning-fast ASGI server.
