@@ -68,7 +68,7 @@ pip-tools==6.2.0 # pip-tools keeps your pinned dependencies fresh.
 virtualenvwrapper==4.8.4 # Enhancements to virtualenv
 isort==5.9.1 # A Python utility / library to sort Python imports.
 jedi==0.18.0 # An autocompletion tool for Python that can be used for text editors.
-pipreqs==0.4.10 # Pip requirements.txt generator based on imports in project
+pipreqs==0.4.12 # Pip requirements.txt generator based on imports in project
 mypy==0.910 # Static type checker
 
 # Web Frameworks
