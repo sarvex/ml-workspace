@@ -33,7 +33,7 @@ seaborn==0.11.1 # Python visualization library based on matplotlib  - Basic
 SQLAlchemy==1.4.19 # Database Abstraction Library
 sortedcontainers==2.4.0 # Sorted Containers -- Sorted List, Sorted Dict, Sorted Set
 simplejson==3.17.2 # Simple, fast, extensible JSON encoder/decoder for Python
-Pygments==2.9.0 # Pygments is a syntax highlighting package written in Python.
+Pygments==2.15.0 # Pygments is a syntax highlighting package written in Python.
 jsonschema==3.2.0 # An implementation of JSON Schema validation for Python
 loguru==0.5.3 # Python logging made (stupidly) simple
 click==8.0.1 # Composable command line interface toolkit
