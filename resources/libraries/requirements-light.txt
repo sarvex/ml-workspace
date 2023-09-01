@@ -5,7 +5,7 @@
 # TODO: 2.3.1 version uses tensorboard 2.4.0 with bug with relativ pathes
 # keras: comes preinstalled with tenserflow 2.x
 # scikit-learn installed via conda
-intel-tensorflow==2.5.0 # TensorFlow is an open source machine learning framework for everyone.
+intel-tensorflow==2.12.0 # TensorFlow is an open source machine learning framework for everyone.
 xgboost==1.4.2 # Scalable, Portable and Distributed Gradient Boosting
 statsmodels==0.12.2 # Statistical modeling and econometrics in Python
 mxnet-mkl==1.6.0 # MXNet is an ultra-scalable deep learning framework. This version uses MKLDNN.
