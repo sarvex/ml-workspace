@@ -226,7 +226,7 @@ torchvision==0.9.1
 torchaudio==0.8.1
 torchtext==0.9.1
 tpot==0.11.7
-transformers==4.5.1
+transformers==4.36.0
 # tsfresh==0.18.0 Comment: has a dependency to matrixprofile which has a conflict of the protobuf library
 tslearn==0.5.0.5
 typing-extensions==3.7.4.1
