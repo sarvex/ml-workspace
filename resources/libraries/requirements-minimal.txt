@@ -16,7 +16,7 @@ future==0.18.3 # Clean single-source support for Python 3 and 2
 python-dateutil==2.8.1 # Extensions to the standard Python datetime module
 PyYAML==5.4.1 # YAML parser and emitter for Python
 joblib==1.1.1 # Lightweight pipelining: using Python functions as pipeline jobs.
-Pillow==9.3.0 # Python Imaging Library (Fork)
+Pillow==10.2.0 # Python Imaging Library (Fork)
 pyzmq==22.1.0 # Python bindings for 0MQ
 python-crontab==2.5.1 # Python Crontab API
 cmake==3.20.4 # CMake is an open-source, cross-platform family of tools designed to build, test and package software
