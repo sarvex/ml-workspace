@@ -188,7 +188,7 @@ scikit-optimize==0.8.1
 scikit-plot==0.3.7
 scikit-surprise==1.1.1
 scipy==1.6.3
-scrapy==2.9.0
+scrapy==2.11.1
 sentencepiece==0.1.95
 shap==0.39.0
 sklearn-pandas==2.1.0
